@@ -5,6 +5,7 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 // import * as myExtension from '../../extension';
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, generatePassword, validatePasswordLength } from "../utils/password";
+import { decodeJwt, validateJwt } from "../utils/jwt";
 
 suite("Extension Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -65,5 +66,75 @@ suite("Password Generator Test Suite", () => {
     const commands = await vscode.commands.getCommands(true);
 
     assert.ok(commands.includes("dev-toolbox.generatePassword"));
+    assert.ok(commands.includes("dev-toolbox.decodeJwt"));
+  });
+});
+
+function encodeSegment(value: unknown): string {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
+}
+
+const JWT_HEADER = { alg: "HS256", typ: "JWT" };
+const JWT_PAYLOAD = { sub: "1234567890", name: "Dev Toolbox", iat: 1516239022 };
+const ENCODED_HEADER = encodeSegment(JWT_HEADER);
+const ENCODED_PAYLOAD = encodeSegment(JWT_PAYLOAD);
+const VALID_JWT = `${ENCODED_HEADER}.${ENCODED_PAYLOAD}.abcDEF123_-`;
+
+const INVALID_JWTS = [
+  "",
+  "   ",
+  "onlyonesegment",
+  "a.b",
+  "a.b.c.d",
+  `!!!.${ENCODED_PAYLOAD}.abc`,
+  `.${ENCODED_PAYLOAD}.abc`,
+  `${ENCODED_HEADER}.a+b.abc`,
+  `${ENCODED_HEADER}.${ENCODED_PAYLOAD}.a+b`,
+  `${Buffer.from("not json").toString("base64url")}.${ENCODED_PAYLOAD}.abc`,
+  `${ENCODED_HEADER}.${encodeSegment([1, 2])}.abc`,
+  `${ENCODED_HEADER}.${encodeSegment(123)}.abc`,
+];
+
+suite("JWT Decoder Test Suite", () => {
+  test("decodeJwt splits a token into header, payload, and signature", () => {
+    const decoded = decodeJwt(VALID_JWT);
+
+    assert.deepStrictEqual(decoded.header, JWT_HEADER);
+    assert.deepStrictEqual(decoded.payload, JWT_PAYLOAD);
+    assert.strictEqual(decoded.signature, "abcDEF123_-");
+  });
+
+  test("decodeJwt normalizes surrounding whitespace, a Bearer prefix, and line breaks", () => {
+    const expected = decodeJwt(VALID_JWT);
+
+    for (const input of [
+      `  ${VALID_JWT}  `,
+      `Bearer ${VALID_JWT}`,
+      `bearer ${VALID_JWT}`,
+      `BEARER  ${VALID_JWT}`,
+      `${ENCODED_HEADER}.${ENCODED_PAYLOAD}\n.abcDEF123_-`,
+    ]) {
+      assert.deepStrictEqual(decodeJwt(input), expected);
+    }
+  });
+
+  test("decodeJwt accepts an empty signature", () => {
+    assert.strictEqual(decodeJwt(`${ENCODED_HEADER}.${ENCODED_PAYLOAD}.`).signature, "");
+  });
+
+  test("decodeJwt rejects malformed tokens", () => {
+    for (const input of INVALID_JWTS) {
+      assert.throws(() => decodeJwt(input), `expected ${JSON.stringify(input)} to be rejected`);
+    }
+  });
+
+  test("validateJwt accepts a valid token", () => {
+    assert.strictEqual(validateJwt(VALID_JWT), undefined);
+  });
+
+  test("validateJwt rejects invalid input", () => {
+    for (const input of INVALID_JWTS) {
+      assert.strictEqual(typeof validateJwt(input), "string");
+    }
   });
 });

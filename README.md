@@ -15,6 +15,7 @@ Every command is available from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift
 | Utility            | Command ID                     | Description                                                                                                                        |
 | ------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Password Generator | `dev-toolbox.generatePassword` | Generates a random password of a chosen length (4–128) from upper- and lowercase letters, digits, and symbols, with a copy button. |
+| JWT Decoder        | `dev-toolbox.decodeJwt`        | Decodes a JWT and opens its header, payload, and signature as formatted JSON in a read-only tab. Does not verify the signature.    |
 
 ## Requirements
 

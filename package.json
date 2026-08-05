@@ -28,6 +28,10 @@
       {
         "command": "dev-toolbox.generatePassword",
         "title": "Dev Toolbox: Generate Password"
+      },
+      {
+        "command": "dev-toolbox.decodeJwt",
+        "title": "Dev Toolbox: Decode JWT"
       }
     ]
   },
