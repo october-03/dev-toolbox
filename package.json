@@ -24,6 +24,10 @@
       {
         "command": "dev-toolbox.helloWorld",
         "title": "Dev Toolbox: Hello World"
+      },
+      {
+        "command": "dev-toolbox.generatePassword",
+        "title": "Dev Toolbox: Generate Password"
       }
     ]
   },

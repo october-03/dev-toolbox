@@ -5,16 +5,16 @@ A collection of handy utilities for developers, bundled into a single VS Code ex
 Instead of installing a dozen single-purpose extensions, Dev Toolbox gathers the small tools you keep reaching for into
 one place — and anyone is welcome to add the one that's missing.
 
-> **Status:** early development. Dev Toolbox is not published to the VS Code Marketplace yet, and no utilities have
-> shipped so far. This is a great time to shape what goes in — see [Contributing](#contributing).
+> **Status:** early development. Dev Toolbox is not published to the VS Code Marketplace yet, and only a handful of
+> utilities have shipped so far. This is a great time to shape what goes in — see [Contributing](#contributing).
 
 ## Utilities
 
 Every command is available from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) under the `Dev Toolbox:` prefix.
 
-| Utility    | Command ID | Description                                                                                                                |
-| ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
-| _None yet_ | —          | No utilities have shipped yet. [Open an Issue](https://github.com/october-03/dev-toolbox/issues) to request the first one. |
+| Utility            | Command ID                     | Description                                                                                                                        |
+| ------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Password Generator | `dev-toolbox.generatePassword` | Generates a random password of a chosen length (4–128) from upper- and lowercase letters, digits, and symbols, with a copy button. |
 
 ## Requirements
 
