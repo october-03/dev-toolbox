@@ -3,6 +3,14 @@
   "displayName": "Dev Toolbox",
   "description": "Useful developer utilities for Visual Studio Code",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/october-03/dev-toolbox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/october-03/dev-toolbox/issues"
+  },
   "engines": {
     "vscode": "^1.125.0"
   },

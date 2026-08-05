@@ -1,71 +1,122 @@
-# dev-toolbox README
+# Dev Toolbox
 
-This is the README for your extension "dev-toolbox". After writing up a brief description, we recommend including the following sections.
+A collection of handy utilities for developers, bundled into a single VS Code extension.
 
-## Features
+Instead of installing a dozen single-purpose extensions, Dev Toolbox gathers the small tools you keep reaching for into
+one place — and anyone is welcome to add the one that's missing.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+> **Status:** early development. Dev Toolbox is not published to the VS Code Marketplace yet, and no utilities have
+> shipped so far. This is a great time to shape what goes in — see [Contributing](#contributing).
 
-For example if there is an image subfolder under your extension project workspace:
+## Utilities
 
-\!\[feature X\]\(images/feature-x.png\)
+Every command is available from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) under the `Dev Toolbox:` prefix.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+| Utility    | Command ID | Description                                                                                                                |
+| ---------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| _None yet_ | —          | No utilities have shipped yet. [Open an Issue](https://github.com/october-03/dev-toolbox/issues) to request the first one. |
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **VS Code** `^1.125.0`
+- **Node.js** 24 or newer
+- **pnpm** — this repository uses a pnpm lockfile and workspace
 
-## Extension Settings
+## Installation
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Dev Toolbox isn't on the Marketplace yet, so install it from source:
 
-For example:
+```bash
+git clone https://github.com/october-03/dev-toolbox.git
+```
 
-This extension contributes the following settings:
+```bash
+cd dev-toolbox && pnpm install
+```
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+Then open the folder in VS Code and press `F5`. This launches an Extension Development Host window with Dev Toolbox
+loaded, where you can try the commands from the Command Palette.
 
-## Known Issues
+To produce a production bundle in `dist/`:
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```bash
+pnpm run package
+```
 
-## Release Notes
+## Contributing
 
-Users appreciate release notes as you update your extension.
+**Anyone can contribute.** Whether you want to build a utility, request one, or fix a typo, you're welcome here.
 
-### 1.0.0
+### Requesting a utility
 
-Initial release of ...
+If there's a utility you need, [open an Issue](https://github.com/october-03/dev-toolbox/issues). Describe what the
+utility should do and the problem it solves for you — that context helps whoever picks it up build the right thing. You
+don't have to implement it yourself.
 
-### 1.0.1
+### Development setup
 
-Fixed issue #.
+```bash
+pnpm install
+```
 
-### 1.1.0
+```bash
+pnpm run watch
+```
 
-Added features X, Y, and Z.
+With the watcher running, press `F5` to open the Extension Development Host. Reload that window (`Cmd+R` / `Ctrl+R`)
+to pick up your changes. Run the test suite with:
 
----
+```bash
+pnpm test
+```
 
-## Following extension guidelines
+### Adding a new utility
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+1. **Register the command** in [`src/extension.ts`](src/extension.ts). Inside `activate()`, register it with
+   `vscode.commands.registerCommand` and push the returned disposable onto `context.subscriptions` so it's cleaned up on
+   deactivation:
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+   ```ts
+   const disposable = vscode.commands.registerCommand("dev-toolbox.yourUtility", () => {
+     // your utility here
+   });
 
-## Working with Markdown
+   context.subscriptions.push(disposable);
+   ```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+2. **Declare it in the manifest.** Add a matching entry to `contributes.commands` in
+   [`package.json`](package.json). The `command` must exactly match the ID you registered, and the `title` should carry
+   the `Dev Toolbox: ` prefix so it groups nicely in the Command Palette:
 
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+   ```json
+   {
+     "command": "dev-toolbox.yourUtility",
+     "title": "Dev Toolbox: Your Utility"
+   }
+   ```
 
-## For more information
+3. **Add a test** alongside [`src/test/extension.test.ts`](src/test/extension.test.ts).
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+4. **Document it** by adding a row to the [Utilities](#utilities) table above.
 
-**Enjoy!**
+### Before opening a pull request
+
+```bash
+pnpm run lint && pnpm run check-types && pnpm run format
+```
+
+## Scripts
+
+| Script                 | What it does                                       |
+| ---------------------- | -------------------------------------------------- |
+| `pnpm run compile`     | Type-check, lint, and build to `dist/`             |
+| `pnpm run watch`       | Rebuild and type-check on every change             |
+| `pnpm run package`     | Production build, minified, no source maps         |
+| `pnpm run lint`        | Run ESLint over `src`                              |
+| `pnpm run check-types` | Type-check with `tsc --noEmit`                     |
+| `pnpm run format`      | Format the repository with Prettier                |
+| `pnpm test`            | Run the extension test suite in a VS Code instance |
+
+## License
+
+[MIT](LICENSE)
