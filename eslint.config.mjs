@@ -1,27 +1,28 @@
-import typescriptEslint from "typescript-eslint";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 
-export default [{
+export default tseslint.config(
+  {
+    ignores: ["dist", "out", "node_modules", ".vscode-test"],
+  },
+  {
     files: ["**/*.ts"],
-}, {
-    plugins: {
-        "@typescript-eslint": typescriptEslint.plugin,
-    },
+    extends: [js.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.stylistic],
 
     languageOptions: {
-        parser: typescriptEslint.parser,
-        ecmaVersion: 2022,
-        sourceType: "module",
+      ecmaVersion: 2022,
+      sourceType: "module",
     },
 
     rules: {
-        "@typescript-eslint/naming-convention": ["warn", {
-            selector: "import",
-            format: ["camelCase", "PascalCase"],
-        }],
+      "@typescript-eslint/naming-convention": ["warn", { selector: "import", format: ["camelCase", "PascalCase"] }],
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
 
-        curly: "warn",
-        eqeqeq: "warn",
-        "no-throw-literal": "warn",
-        semi: "warn",
+      curly: "warn",
+      eqeqeq: "warn",
+      "no-throw-literal": "warn",
     },
-}];
+  },
+  eslintConfigPrettier,
+);
